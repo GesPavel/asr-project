@@ -1,0 +1,9 @@
+[requires]
+sdl2/2.0.14@bincrafters/stable
+glew/2.1.0
+
+[options]
+sdl2:iconv=False
+
+[generators]
+cmake
