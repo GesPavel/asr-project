@@ -42,6 +42,7 @@ static GLint time_uniform_location{-1};
 
 static GLuint vertex_array_object{0};
 static GLuint vertex_buffer_object{0};
+static size_t vertices{0};
 
 /*
  * Utility Data
@@ -125,7 +126,7 @@ static void create_es2_shader_program(const char *vertex_shader_source, const ch
             auto *info_log = new GLchar[static_cast<size_t>(info_log_length)];
 
             glGetShaderInfoLog(fragment_shader_object, info_log_length, nullptr, info_log);
-            std::cerr << "Failed to compile a vertex shader" << std::endl
+            std::cerr << "Failed to compile a fragment shader" << std::endl
                       << "Compilation log:\n" << info_log << std::endl;
 
             delete[] info_log;
@@ -177,8 +178,10 @@ static void destroy_es2_shader_program()
  * Geometry Buffer Handling
  */
 
-static void generate_es2_geometry(const float *geometry_data, const size_t geometry_data_size)
+static void generate_es2_geometry(const float *geometry_data, const size_t vertex_count)
 {
+    vertices = vertex_count;
+
     glGenVertexArrays(1, &vertex_array_object);
     glBindVertexArray(vertex_array_object);
 
@@ -186,7 +189,7 @@ static void generate_es2_geometry(const float *geometry_data, const size_t geome
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
     glBufferData(
         GL_ARRAY_BUFFER,
-        geometry_data_size, geometry_data,
+        vertices * 7 * sizeof(float), geometry_data,
         GL_STATIC_DRAW
     );
 
@@ -244,7 +247,7 @@ static void render_next_es2_frame()
         glUniform1f(time_uniform_location, time / 1000.0);
     }
 
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 3);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, vertices);
 
     SDL_GL_SwapWindow(window);
 }

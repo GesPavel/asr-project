@@ -39,6 +39,7 @@ static const float Triangle_Geometry_Data[] = {
      0.0f,  0.565f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
      0.5f, -0.305f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 };
+static const size_t Triangle_Geometry_Vertex_Count{3};
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
 {
@@ -49,7 +50,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
     );
     generate_es2_geometry(
         Triangle_Geometry_Data,
-        sizeof(Triangle_Geometry_Data)
+        Triangle_Geometry_Vertex_Count
     );
 
     prepare_for_es2_rendering();
