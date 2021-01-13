@@ -26,7 +26,7 @@ Install dependencies with the Conan package manager once:
 ```bash
 conan profile new default --detect # ignore error messages about existing profiles
 conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
-conan install .. --build sdl2
+conan install .. --build sdl2 # may also need --build=glew
 ```
 
 Configure the project to generate IDE or Makefiles:

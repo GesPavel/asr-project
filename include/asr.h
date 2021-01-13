@@ -14,7 +14,7 @@
 #ifdef __APPLE__
 #define glGenVertexArrays glGenVertexArraysAPPLE
 #define glBindVertexArray glBindVertexArrayAPPLE
-#define glDeleteVertexArrays glDeleteVertexArrays
+#define glDeleteVertexArrays glDeleteVertexArraysAPPLE
 #endif
 
 namespace asr
