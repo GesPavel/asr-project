@@ -15,5 +15,5 @@ if (WIN32 AND MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-add_executable(first_triangle_test ${ASR_SOURCES} tests/first_triangle_test.cpp)
-target_link_libraries(first_triangle_test ${ASR_LIBRARIES})
+add_executable(triangle_test ${ASR_SOURCES} tests/triangle_test.cpp)
+target_link_libraries(triangle_test ${ASR_LIBRARIES})

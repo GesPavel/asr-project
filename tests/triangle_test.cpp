@@ -1,5 +1,7 @@
 #include "asr.h"
 
+#include <cmath>
+
 static const char Vertex_Shader_Source[] = R"(
     #version 110
 
@@ -43,12 +45,16 @@ static const size_t Triangle_Geometry_Vertex_Count{3};
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
 {
+    using namespace asr;
+
     create_es2_sdl_window();
     create_es2_shader_program(
         Vertex_Shader_Source,
         Fragment_Shader_Source
     );
+
     generate_es2_geometry(
+        GeometryType::Triangles,
         Triangle_Geometry_Data,
         Triangle_Geometry_Vertex_Count
     );
