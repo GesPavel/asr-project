@@ -36,10 +36,10 @@ static const char Fragment_Shader_Source[] = R"(
 )";
 
 static const float Triangle_Geometry_Data[] = {
-//   Position       Color (RGBA)
+//   Position             Color (RGBA)
     -0.5f, -0.305f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
      0.0f,  0.565f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-     0.5f, -0.305f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+     0.5f, -0.305f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
 };
 static const size_t Triangle_Geometry_Vertex_Count{3};
 
@@ -52,7 +52,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
         Vertex_Shader_Source,
         Fragment_Shader_Source
     );
-
     generate_es2_geometry(
         GeometryType::Triangles,
         Triangle_Geometry_Data,
