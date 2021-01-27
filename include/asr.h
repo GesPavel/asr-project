@@ -23,8 +23,8 @@ namespace asr
      * SDL Window Globals
      */
 
-    static int windows_width{500};
-    static int windows_height{500};
+    static int window_width{500};
+    static int window_height{500};
 
     static SDL_Window *window{nullptr};
     static SDL_GLContext gl_context;
@@ -76,10 +76,10 @@ namespace asr
             SDL_CreateWindow(
                 "ASR: Version 1.0",
                 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                windows_width, windows_height,
+                window_width, window_height,
                 SDL_WINDOW_OPENGL
             );
-        SDL_GL_GetDrawableSize(window, reinterpret_cast<int *>(&windows_width), reinterpret_cast<int *>(&windows_height));
+        SDL_GL_GetDrawableSize(window, reinterpret_cast<int *>(&window_width), reinterpret_cast<int *>(&window_height));
         gl_context = SDL_GL_CreateContext(window);
         glewExperimental = GL_TRUE; glewInit();
         SDL_GL_SetSwapInterval(1);
@@ -266,7 +266,7 @@ namespace asr
     static void prepare_for_es2_rendering()
     {
         glClearColor(0, 0, 0, 0);
-        glViewport(0, 0, static_cast<GLsizei>(windows_width), static_cast<GLsizei>(windows_height));
+        glViewport(0, 0, static_cast<GLsizei>(window_width), static_cast<GLsizei>(window_height));
 
         rendering_start_time = std::chrono::system_clock::now();
     }
