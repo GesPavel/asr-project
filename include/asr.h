@@ -74,7 +74,7 @@ namespace asr
         SDL_Init(SDL_INIT_VIDEO);
         window =
             SDL_CreateWindow(
-                "ASR: First Triangle Test",
+                "ASR: Version 1.0",
                 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                 windows_width, windows_height,
                 SDL_WINDOW_OPENGL
