@@ -1,6 +1,7 @@
 #include "asr.h"
 
 #include <cmath>
+#include <vector>
 
 static const char Vertex_Shader_Source[] = R"(
     #version 110
@@ -35,13 +36,15 @@ static const char Fragment_Shader_Source[] = R"(
     }
 )";
 
-static const float Triangle_Geometry_Data[] = {
-//   Position             Color (RGBA)
-    -0.5f, -0.305f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-     0.0f,  0.565f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-     0.5f, -0.305f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+static const std::vector<asr::Vertex> Triangle_Geometry_Vertices = {
+            //   Position             Color (RGBA)
+    asr::Vertex{-0.5f, -0.305f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f},
+    asr::Vertex{ 0.5f, -0.305f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
+    asr::Vertex{ 0.0f,  0.565f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f}
 };
-static const size_t Triangle_Geometry_Vertex_Count{3};
+static const std::vector<unsigned int> Triangle_Geometry_Indices = {
+    0, 1, 2
+};
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
 {
@@ -52,10 +55,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
         Vertex_Shader_Source,
         Fragment_Shader_Source
     );
-    generate_es2_geometry(
+
+    std::vector<Vertex> vertices{Triangle_Geometry_Vertices};
+    auto gpu_geometry = generate_es2_gpu_geometry(
         GeometryType::Triangles,
-        Triangle_Geometry_Data,
-        Triangle_Geometry_Vertex_Count
+        Triangle_Geometry_Vertices,
+        Triangle_Geometry_Indices
     );
 
     prepare_for_es2_rendering();
@@ -63,10 +68,16 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
     bool should_stop = false;
     while (!should_stop) {
         process_es2_sdl_window_events(&should_stop);
-        render_next_es2_frame();
+
+        prepare_to_render_es2_frame();
+
+        set_es2_gpu_geometry_current(&gpu_geometry);
+        render_current_es2_gpu_geometry();
+
+        finish_es2_frame_rendering();
     }
 
-    destroy_es2_geometry();
+    destroy_es2_gpu_geometry(gpu_geometry);
     destroy_es2_shader_program();
     destroy_es2_sdl_window();
 
