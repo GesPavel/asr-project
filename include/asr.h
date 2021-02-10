@@ -167,6 +167,7 @@ namespace asr
             } else if (event.type == SDL_KEYDOWN) {
                 key_down_event_handler(event.key.keysym.sym);
             }
+            keys_down_event_handler(SDL_GetKeyboardState(nullptr));
         }
     }
 
