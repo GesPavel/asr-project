@@ -11,10 +11,11 @@
 
 #include <cassert>
 #include <chrono>
+#include <cstdint>
 #include <functional>
 #include <iostream>
 #include <stack>
-#include <cstdint>
+#include <vector>
 
 /*
  * Platform Quirks
