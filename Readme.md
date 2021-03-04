@@ -10,7 +10,7 @@ Install all the prerequisites first.
 * MSVC (with Latest Visual Studio), Clang (with Latest Xcode), GCC (any version with support of C++17)
 * CMake (version `3.17.0` or higher)
 * Conan (version `1.32.1` or higher)
-* GPU drivers (latest version with stable support of OpenGL ES 2.0)
+* GPU drivers (latest version with stable support of OpenGL 2 or ES 2.0)
 
 ## Building
 
@@ -48,9 +48,11 @@ Build the project:
 cmake --build .
 ```
 
-Run the test program from the `asr/build/bin/` directory:
+Run the test program from the (!) `asr/build/bin/` directory:
 
 ```bash
 cd .. # Ensure that the current working directory is set to the root asr folder.
 ./build/bin/<name of the graphics test executable>
 ```
+
+You may have to set the Working Directory (CWD) in your IDE for some test targets to be able to open image files.

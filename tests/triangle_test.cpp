@@ -1,6 +1,5 @@
 #include "asr.h"
 
-#include <cmath>
 #include <vector>
 
 static const char Vertex_Shader_Source[] = R"(
@@ -37,49 +36,47 @@ static const char Fragment_Shader_Source[] = R"(
 )";
 
 static const std::vector<asr::Vertex> Triangle_Geometry_Vertices = {
-            //   Position             Color (RGBA)
-    asr::Vertex{-0.5f, -0.305f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f},
-    asr::Vertex{ 0.5f, -0.305f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-    asr::Vertex{ 0.0f,  0.565f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f}
+    //           Position             Color (RGBA)            Texture Coordinates (UV)
+    asr::Vertex{ 0.5f,   0.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,  0.5f },
+    asr::Vertex{-0.25f,  0.43f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.25f, 0.07f},
+    asr::Vertex{-0.25f, -0.43f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.25f, 0.93f}
 };
-static const std::vector<unsigned int> Triangle_Geometry_Indices = {
-    0, 1, 2
-};
+static const std::vector<unsigned int> Triangle_Geometry_Indices = { 0, 1, 2 };
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
 {
     using namespace asr;
 
-    create_es2_sdl_window();
-    create_es2_shader_program(
+    create_window(500, 500);
+
+    create_shader_program(
         Vertex_Shader_Source,
         Fragment_Shader_Source
     );
-
-    std::vector<Vertex> vertices{Triangle_Geometry_Vertices};
-    auto gpu_geometry = generate_es2_gpu_geometry(
+    auto geometry = generate_geometry(
         GeometryType::Triangles,
         Triangle_Geometry_Vertices,
         Triangle_Geometry_Indices
     );
 
-    prepare_for_es2_rendering();
+    prepare_for_rendering();
 
-    bool should_stop = false;
+    bool should_stop{false};
     while (!should_stop) {
-        process_es2_sdl_window_events(&should_stop);
+        process_window_events(&should_stop);
 
-        prepare_to_render_es2_frame();
+        prepare_to_render_frame();
 
-        set_es2_gpu_geometry_current(&gpu_geometry);
-        render_current_es2_gpu_geometry();
+        set_geometry_current(&geometry);
+        render_current_geometry();
 
-        finish_es2_frame_rendering();
+        finish_frame_rendering();
     }
 
-    destroy_es2_gpu_geometry(gpu_geometry);
-    destroy_es2_shader_program();
-    destroy_es2_sdl_window();
+    destroy_geometry(geometry);
+    destroy_shader_program();
+
+    destroy_window();
 
     return 0;
 }

@@ -24,3 +24,9 @@ target_link_libraries(circle_test ${ASR_LIBRARIES})
 add_executable(rectangle_test ${ASR_SOURCES} tests/rectangle_test.cpp)
 target_link_libraries(rectangle_test ${ASR_LIBRARIES})
 
+add_executable(sphere_test ${ASR_SOURCES} tests/sphere_test.cpp)
+target_link_libraries(sphere_test ${ASR_LIBRARIES})
+
+add_executable(box_test ${ASR_SOURCES} tests/box_test.cpp)
+target_link_libraries(box_test ${ASR_LIBRARIES})
+
