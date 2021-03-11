@@ -1,9 +1,10 @@
 #include "asr.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
-static const char Vertex_Shader_Source[] = R"(
+static const std::string Vertex_Shader_Source = R"(
     #version 110
 
     attribute vec4 position;
@@ -12,6 +13,8 @@ static const char Vertex_Shader_Source[] = R"(
 
     uniform bool texture_enabled;
     uniform mat4 texture_transformation_matrix;
+
+    uniform float point_size;
 
     uniform mat4 model_view_projection_matrix;
 
@@ -27,11 +30,11 @@ static const char Vertex_Shader_Source[] = R"(
         }
 
         gl_Position = model_view_projection_matrix * position;
-        gl_PointSize = 10.0;
+        gl_PointSize = point_size;
     }
 )";
 
-static const char Fragment_Shader_Source[] = R"(
+static const std::string Fragment_Shader_Source = R"(
     #version 110
 
     #define TEXTURING_MODE_ADDITION            0
@@ -91,6 +94,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_r
             float u{static_cast<float>(j) / static_cast<float>(width_segments_count)};
             vertices.push_back(asr::Vertex{
                 x, y, 0.0f,
+                0.0f, 0.0f, 1.0f,
                 1.0f, 1.0f, 1.0f, 1.0f,
                 u, v
             });
@@ -141,6 +145,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_r
             float u{static_cast<float>(j) / static_cast<float>(width_segments_count)};
             vertices.push_back(asr::Vertex{
                 x, y, 0.0f,
+                0.0f, 0.0f, 1.0f,
                 1.0f, 1.0f, 1.0f, 1.0f,
                 u, v
             });
@@ -191,6 +196,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_r
             float u{static_cast<float>(j) / static_cast<float>(width_segments_count)};
             vertices.push_back(asr::Vertex{
                 x, y, 0.0f,
+                0.0f, 0.0f, 1.0f,
                 1.0f, 1.0f, 1.0f, 1.0f,
                 u, v
             });
@@ -205,40 +211,29 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
 {
     using namespace asr;
 
-    create_window(500, 500);
+    create_window(500, 500, "Rectangle Test on ASR Version 4.0");
 
-    create_shader_program(
-        Vertex_Shader_Source,
-        Fragment_Shader_Source
-    );
+    auto material = create_material(Vertex_Shader_Source, Fragment_Shader_Source);
+
     auto [geometry_vertices, geometry_indices] = generate_rectangle_geometry_data(1.0f, 1.0f, 5, 5);
-    auto geometry = generate_geometry(
-        GeometryType::Triangles,
-        geometry_vertices,
-        geometry_indices
-    );
+    auto geometry = create_geometry(Triangles, geometry_vertices, geometry_indices);
+
     auto [edge_vertices, edge_indices] = generate_rectangle_edges_data(1.0f, 1.0f, 5, 5);
     for (auto &vertex : edge_vertices) { vertex.z -= 0.01f; }
-    auto edges_geometry = generate_geometry(
-        GeometryType::Lines,
-        edge_vertices,
-        edge_indices
-    );
+    auto edges_geometry = create_geometry(Lines, edge_vertices, edge_indices);
+
     auto [vertices, vertex_indices] = generate_rectangle_vertices_data(1.0f, 1.0f, 5, 5);
-    for (auto &vertex : vertices) {
-        vertex.z -= 0.02f; vertex.r = 1.0f; vertex.g = 0.0f; vertex.b = 0.0f;
-    }
-    auto vertices_geometry = generate_geometry(
-        GeometryType::Points,
-        vertices,
-        vertex_indices
-    );
+    for (auto &vertex : vertices) { vertex.z -= 0.02f; vertex.r = 1.0f; vertex.g = 0.0f; vertex.b = 0.0f; }
+    auto vertices_geometry = create_geometry(Points, vertices, vertex_indices);
+
     auto image = read_image_file("data/images/uv_test.png");
-    auto texture = generate_texture(image);
+    auto texture = create_texture(image);
 
     prepare_for_rendering();
 
-    set_line_width(3);
+    set_material_current(&material);
+    set_material_line_width(3.0f);
+    set_material_point_size(10.0f);
 
     bool should_stop{false};
     while (!should_stop) {
@@ -260,10 +255,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
     }
 
     destroy_texture(texture);
+
     destroy_geometry(geometry);
     destroy_geometry(edges_geometry);
     destroy_geometry(vertices_geometry);
-    destroy_shader_program();
+
+    destroy_material(material);
 
     destroy_window();
 

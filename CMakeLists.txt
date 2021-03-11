@@ -30,3 +30,12 @@ target_link_libraries(sphere_test ${ASR_LIBRARIES})
 add_executable(box_test ${ASR_SOURCES} tests/box_test.cpp)
 target_link_libraries(box_test ${ASR_LIBRARIES})
 
+add_executable(transform1_test ${ASR_SOURCES} tests/transform1_test.cpp)
+target_link_libraries(transform1_test ${ASR_LIBRARIES})
+
+add_executable(transform2_test ${ASR_SOURCES} tests/transform2_test.cpp)
+target_link_libraries(transform2_test ${ASR_LIBRARIES})
+
+add_executable(shader_test ${ASR_SOURCES} tests/shader_test.cpp)
+target_link_libraries(shader_test ${ASR_LIBRARIES})
+

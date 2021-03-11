@@ -15,8 +15,6 @@ static const std::string Vertex_Shader_Source = R"(
     uniform bool texture_enabled;
     uniform mat4 texture_transformation_matrix;
 
-    uniform float point_size;
-
     uniform mat4 model_view_projection_matrix;
 
     varying vec4 fragment_color;
@@ -31,7 +29,6 @@ static const std::string Vertex_Shader_Source = R"(
         }
 
         gl_Position = model_view_projection_matrix * position;
-        gl_PointSize = point_size;
     }
 )";
 
@@ -94,8 +91,8 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_s
             float cos_theta{std::cosf(theta)};
             float sin_theta{std::sinf(theta)};
 
-            float x{cos_theta * sin_phi};
             float y{cos_phi};
+            float x{sin_phi * cos_theta};
             float z{sin_phi * sin_theta};
 
             vertices.push_back(asr::Vertex{
@@ -132,131 +129,30 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_s
     return std::make_pair(vertices, indices);
 }
 
-static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_sphere_edges_data(
-                                                                          float radius,
-                                                                          unsigned int width_segments_count,
-                                                                          unsigned int height_segments_count
-                                                                      )
-{
-    std::vector<asr::Vertex> vertices;
-    std::vector<unsigned int> indices;
-
-    for (unsigned int ring = 0; ring <= height_segments_count; ++ring) {
-        float v{static_cast<float>(ring) / static_cast<float>(height_segments_count)};
-        for (unsigned int segment = 0; segment <= width_segments_count; ++segment) {
-            float u{static_cast<float>(segment) / static_cast<float>(width_segments_count)};
-
-            float theta{u * asr::two_pi};
-            float phi{v * asr::pi};
-
-            float cos_theta{std::cosf(theta)};
-            float sin_theta{std::sinf(theta)};
-            float sin_phi{std::sinf(phi)};
-            float cos_phi{std::cosf(phi)};
-
-            float x{cos_theta * sin_phi};
-            float y{cos_phi};
-            float z{sin_phi * sin_theta};
-
-            vertices.push_back(asr::Vertex{
-                x * radius, y * radius, z * radius,
-                x, y, z,
-                1.0f, 1.0f, 1.0f, 1.0f,
-                1.0f - u, v
-            });
-        }
-    }
-
-    for (unsigned int ring = 0; ring < height_segments_count; ++ring) {
-        for (unsigned int segment = 0; segment < width_segments_count; ++segment) {
-            unsigned int index_a{ring * (width_segments_count + 1) + segment};
-            unsigned int index_b{index_a + 1};
-
-            unsigned int index_c{index_a + (width_segments_count + 1)};
-            unsigned int index_d{index_c + 1};
-
-            if (ring != 0) {
-                indices.push_back(index_a); indices.push_back(index_b);
-                indices.push_back(index_b); indices.push_back(index_c);
-                indices.push_back(index_c); indices.push_back(index_a);
-            }
-
-            if (ring != height_segments_count - 1) {
-                indices.push_back(index_b); indices.push_back(index_d);
-                indices.push_back(index_d); indices.push_back(index_c);
-                indices.push_back(index_c); indices.push_back(index_b);
-            }
-        }
-    }
-
-    return std::make_pair(vertices, indices);
-}
-
-static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_sphere_vertices_data(
-                                                                          float radius,
-                                                                          unsigned int width_segments_count,
-                                                                          unsigned int height_segments_count
-                                                                      )
-{
-    std::vector<asr::Vertex> vertices;
-    std::vector<unsigned int> indices;
-
-    for (unsigned int ring = 0; ring <= height_segments_count; ++ring) {
-        float v{static_cast<float>(ring) / static_cast<float>(height_segments_count)};
-        for (unsigned int segment = 0; segment <= width_segments_count; ++segment) {
-            float u{static_cast<float>(segment) / static_cast<float>(width_segments_count)};
-
-            float theta{u * asr::two_pi};
-            float phi{v * asr::pi};
-
-            float cos_theta{std::cosf(theta)};
-            float sin_theta{std::sinf(theta)};
-            float sin_phi{std::sinf(phi)};
-            float cos_phi{std::cosf(phi)};
-
-            float x{cos_theta * sin_phi};
-            float y{cos_phi};
-            float z{sin_phi * sin_theta};
-
-            vertices.push_back(asr::Vertex{
-                x * radius, y * radius, z * radius,
-                x, y, z,
-                1.0f, 1.0f, 1.0f, 1.0f,
-                1.0f - u, v
-            });
-            indices.push_back(vertices.size() - 1);
-        }
-    }
-
-    return std::make_pair(vertices, indices);
-}
-
 int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
 {
     using namespace asr;
 
-    create_window(500, 500, "Sphere Test on ASR Version 4.0");
+    create_window("Transformation Test on ASR Version 4.0");
 
     auto material = create_material(Vertex_Shader_Source, Fragment_Shader_Source);
 
     auto [geometry_vertices, geometry_indices] = generate_sphere_geometry_data(0.5f, 20, 20);
     auto geometry = create_geometry(Triangles, geometry_vertices, geometry_indices);
 
-    auto [edge_vertices, edge_indices] = generate_sphere_edges_data(0.501f, 20, 20);
-    auto edges_geometry = create_geometry(Lines, edge_vertices, edge_indices);
-
-    auto [vertices, vertex_indices]  = generate_sphere_vertices_data(0.502f, 20, 20);
-    for (auto &vertex : vertices) { vertex.r = 1.0f; vertex.g = 0.0f; vertex.b = 0.0f; }
-    auto vertices_geometry = create_geometry(Points, vertices, vertex_indices);
-
-    auto image = read_image_file("data/images/uv_test.png");
-    auto texture = create_texture(image);
+    bool generate_mipmaps = true;
+    auto sun_image = read_image_file("data/images/sun.jpg");
+    auto sun_texture = create_texture(sun_image, generate_mipmaps);
+    auto venus_image = read_image_file("data/images/venus.jpg");
+    auto venus_texture = create_texture(venus_image, generate_mipmaps);
+    auto earth_image = read_image_file("data/images/earth.jpg");
+    auto earth_texture = create_texture(earth_image, generate_mipmaps);
+    auto moon_image = read_image_file("data/images/moon.jpg");
+    auto moon_texture = create_texture(moon_image, generate_mipmaps);
 
     prepare_for_rendering();
 
     set_material_current(&material);
-    set_material_line_width(3.0f);
-    set_material_point_size(10.0f);
     set_material_face_culling_enabled(true);
     set_material_depth_test_enabled(true);
 
@@ -266,10 +162,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
     static const float CAMERA_NEAR_PLANE{0.1f};
     static const float CAMERA_FAR_PLANE{100.0f};
 
-    glm::vec3 camera_position{0.8f, 0.62f, 1.0f};
-    glm::vec3 camera_rotation{-0.45f, 0.7f, 0.0f};
+    glm::vec3 camera_position{0.0f, 3.23f, 6.34f};
+    glm::vec3 camera_rotation{-0.6f, 0.0f, 0.0f};
     set_keys_down_event_handler([&](const uint8_t *keys) {
-        if (keys[SDL_SCANCODE_ESCAPE]) std::exit(0);
+        if (keys[SDL_SCANCODE_ESCAPE]) exit(0);
         if (keys[SDL_SCANCODE_W]) camera_rotation.x -= CAMERA_ROT_SPEED * get_dt();
         if (keys[SDL_SCANCODE_A]) camera_rotation.y += CAMERA_ROT_SPEED * get_dt();
         if (keys[SDL_SCANCODE_S]) camera_rotation.x += CAMERA_ROT_SPEED * get_dt();
@@ -286,6 +182,31 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
     set_matrix_mode(Projection);
     load_perspective_projection_matrix(CAMERA_FOV, CAMERA_NEAR_PLANE, CAMERA_FAR_PLANE);
 
+    float sun_rotation{0.0f};
+    float sun_delta_angle{0.2f};
+    float sun_size{2.0f};
+
+    float venus_rotation{0.0f};
+    float venus_delta_angle{-0.8f};
+    float venus_sun_rotation{0.0f};
+    float venus_sun_delta_angle{-0.1f};
+    float venus_sun_distance{3.0f};
+    float venus_size{0.42f};
+
+    float earth_rotation{0.0f};
+    float earth_delta_angle{-0.8f};
+    float earth_sun_rotation{0.0f};
+    float earth_sun_delta_angle{0.5f};
+    float earth_sun_distance{5.0f};
+    float earth_size{0.4f};
+
+    float moon_rotation{0.0f};
+    float moon_delta_angle{0.1f};
+    float moon_earth_rotation{0.0f};
+    float moon_earth_delta_angle{1.0f};
+    float moon_earth_distance{0.5f};
+    float moon_size{0.1f};
+
     bool should_stop{false};
     while (!should_stop) {
         process_window_events(&should_stop);
@@ -297,24 +218,72 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
         translate_matrix(camera_position);
         rotate_matrix(camera_rotation);
 
-        set_texture_current(&texture);
+        set_matrix_mode(Model);
+
+        // Sun
+
+        load_identity_matrix();
+        rotate_matrix(glm::vec3{0.0f, sun_rotation, 0.0f});
+        sun_rotation += sun_delta_angle *get_dt();
+        scale_matrix(glm::vec3{sun_size});
+
+        set_texture_current(&sun_texture);
         set_geometry_current(&geometry);
         render_current_geometry();
 
-        set_texture_current(nullptr);
-        set_geometry_current(&edges_geometry);
+        // Venus
+
+        load_identity_matrix();
+        rotate_matrix(glm::vec3{0.0f, venus_sun_rotation, 0.0f});
+        venus_sun_rotation += venus_sun_delta_angle *get_dt();
+        translate_matrix(glm::vec3{venus_sun_distance, 0.0f, 0.0f});
+        rotate_matrix(glm::vec3{0.0f, venus_rotation, 0.0f});
+        venus_rotation += venus_delta_angle *get_dt();
+        scale_matrix(glm::vec3{venus_size});
+
+        set_texture_current(&venus_texture);
+        set_geometry_current(&geometry);
         render_current_geometry();
-        set_geometry_current(&vertices_geometry);
+
+        // Earth
+
+        load_identity_matrix();
+        rotate_matrix(glm::vec3{0.0f, earth_sun_rotation, 0.0f});
+        earth_sun_rotation += earth_sun_delta_angle *get_dt();
+        translate_matrix(glm::vec3{earth_sun_distance, 0.0f, 0.0f});
+
+        push_matrix();
+        rotate_matrix(glm::vec3{0.0f, earth_rotation, 0.0f});
+        earth_rotation += earth_delta_angle *get_dt();
+        scale_matrix(glm::vec3{earth_size});
+
+        set_texture_current(&earth_texture);
+        set_geometry_current(&geometry);
+        render_current_geometry();
+
+        // Moon
+
+        pop_matrix();
+        rotate_matrix(glm::vec3{0.0f, moon_earth_rotation, 0.0f});
+        moon_earth_rotation += moon_earth_delta_angle *get_dt();
+        translate_matrix(glm::vec3{moon_earth_distance, 0.0f, 0.0f});
+        rotate_matrix(glm::vec3{0.0f, moon_rotation, 0.0f});
+        moon_rotation += moon_delta_angle *get_dt();
+        scale_matrix(glm::vec3{moon_size});
+
+        set_texture_current(&moon_texture);
+        set_geometry_current(&geometry);
         render_current_geometry();
 
         finish_frame_rendering();
     }
 
-    destroy_texture(texture);
+    destroy_texture(moon_texture);
+    destroy_texture(earth_texture);
+    destroy_texture(venus_texture);
+    destroy_texture(sun_texture);
 
     destroy_geometry(geometry);
-    destroy_geometry(edges_geometry);
-    destroy_geometry(vertices_geometry);
 
     destroy_material(material);
 

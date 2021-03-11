@@ -1,9 +1,10 @@
 #include "asr.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
-static const char Vertex_Shader_Source[] = R"(
+static const std::string Vertex_Shader_Source = R"(
     #version 110
 
     attribute vec4 position;
@@ -12,6 +13,8 @@ static const char Vertex_Shader_Source[] = R"(
 
     uniform bool texture_enabled;
     uniform mat4 texture_transformation_matrix;
+
+    uniform float point_size;
 
     uniform mat4 model_view_projection_matrix;
 
@@ -27,11 +30,11 @@ static const char Vertex_Shader_Source[] = R"(
         }
 
         gl_Position = model_view_projection_matrix * position;
-        gl_PointSize = 10.0;
+        gl_PointSize = point_size;
     }
 )";
 
-static const char Fragment_Shader_Source[] = R"(
+static const std::string Fragment_Shader_Source = R"(
     #version 110
 
     #define TEXTURING_MODE_ADDITION            0
@@ -97,7 +100,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= width_segments_count; ++j) {
             float x{static_cast<float>(j) * segment_width - half_width};
             float u{0.25f + static_cast<float>(j) / static_cast<float>(width_segments_count) * 0.25f};
-            vertices.push_back(asr::Vertex{x, y, half_depth, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{x, y, half_depth, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
         }
     }
 
@@ -121,7 +124,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= depth_segments_count; ++j) {
             float z{static_cast<float>(j) * segment_depth - half_depth};
             float u{0.5f + (1.0f - static_cast<float>(j) / static_cast<float>(depth_segments_count)) * 0.25f};
-            vertices.push_back(asr::Vertex{half_width, y, z, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{half_width, y, z, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
         }
     }
 
@@ -145,7 +148,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= width_segments_count; ++j) {
             float x{static_cast<float>(j) * segment_width - half_width};
             float u{0.75f + (1.0f - static_cast<float>(j) / static_cast<float>(width_segments_count)) * 0.25f};
-            vertices.push_back(asr::Vertex{x, y, -half_depth, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{x, y, -half_depth, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
         }
     }
 
@@ -169,7 +172,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= depth_segments_count; ++j) {
             float z{static_cast<float>(j) * segment_depth - half_depth};
             float u{static_cast<float>(j) / static_cast<float>(depth_segments_count) * 0.25f};
-            vertices.push_back(asr::Vertex{-half_width, y, z, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{-half_width, y, z, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
         }
     }
 
@@ -193,7 +196,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= width_segments_count; ++j) {
             float x{static_cast<float>(j) * segment_width - half_width};
             float u{0.25f + static_cast<float>(j) / static_cast<float>(width_segments_count) * 0.25f};
-            vertices.push_back(asr::Vertex{x, -half_height, z, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{x, -half_height, z, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
         }
     }
 
@@ -217,7 +220,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= width_segments_count; ++j) {
             float x{static_cast<float>(j) * segment_width - half_width};
             float u{0.25f + static_cast<float>(j) / static_cast<float>(width_segments_count) * 0.25f};
-            vertices.push_back(asr::Vertex{x, half_height, z, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{x, half_height, z, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
         }
     }
 
@@ -263,7 +266,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= width_segments_count; ++j) {
             float x{static_cast<float>(j) * segment_width - half_width};
             float u{0.25f + static_cast<float>(j) / static_cast<float>(width_segments_count) * 0.25f};
-            vertices.push_back(asr::Vertex{x, y, half_depth, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{x, y, half_depth, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
         }
     }
 
@@ -292,7 +295,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= depth_segments_count; ++j) {
             float z{static_cast<float>(j) * segment_depth - half_depth};
             float u{0.5f + (1.0f - static_cast<float>(j) / static_cast<float>(depth_segments_count)) * 0.25f};
-            vertices.push_back(asr::Vertex{half_width, y, z, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{half_width, y, z, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
         }
     }
 
@@ -321,7 +324,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= width_segments_count; ++j) {
             float x{static_cast<float>(j) * segment_width - half_width};
             float u{0.75f + (1.0f - static_cast<float>(j) / static_cast<float>(width_segments_count)) * 0.25f};
-            vertices.push_back(asr::Vertex{x, y, -half_depth, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{x, y, -half_depth, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
         }
     }
 
@@ -350,7 +353,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= depth_segments_count; ++j) {
             float z{static_cast<float>(j) * segment_depth - half_depth};
             float u{static_cast<float>(j) / static_cast<float>(depth_segments_count) * 0.25f};
-            vertices.push_back(asr::Vertex{-half_width, y, z, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{-half_width, y, z, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
         }
     }
 
@@ -379,7 +382,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= width_segments_count; ++j) {
             float x{static_cast<float>(j) * segment_width - half_width};
             float u{0.25f + static_cast<float>(j) / static_cast<float>(width_segments_count) * 0.25f};
-            vertices.push_back(asr::Vertex{x, -half_height, z, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{x, -half_height, z, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
         }
     }
 
@@ -408,7 +411,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= width_segments_count; ++j) {
             float x{static_cast<float>(j) * segment_width - half_width};
             float u{0.25f + static_cast<float>(j) / static_cast<float>(width_segments_count) * 0.25f};
-            vertices.push_back(asr::Vertex{x, half_height, z, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{x, half_height, z, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
         }
     }
 
@@ -459,7 +462,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= width_segments_count; ++j) {
             float x{static_cast<float>(j) * segment_width - half_width};
             float u{0.25f + static_cast<float>(j) / static_cast<float>(width_segments_count) * 0.25f};
-            vertices.push_back(asr::Vertex{x, y, half_depth, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{x, y, half_depth, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
             indices.push_back(vertices.size() - 1);
         }
     }
@@ -472,7 +475,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= depth_segments_count; ++j) {
             float z{static_cast<float>(j) * segment_depth - half_depth};
             float u{0.5f + (1.0f - static_cast<float>(j) / static_cast<float>(depth_segments_count)) * 0.25f};
-            vertices.push_back(asr::Vertex{half_width, y, z, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{half_width, y, z, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
             indices.push_back(vertices.size() - 1);
         }
     }
@@ -485,7 +488,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= width_segments_count; ++j) {
             float x{static_cast<float>(j) * segment_width - half_width};
             float u{0.75f + (1.0f - static_cast<float>(j) / static_cast<float>(width_segments_count)) * 0.25f};
-            vertices.push_back(asr::Vertex{x, y, -half_depth, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{x, y, -half_depth, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
             indices.push_back(vertices.size() - 1);
         }
     }
@@ -498,7 +501,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= depth_segments_count; ++j) {
             float z{static_cast<float>(j) * segment_depth - half_depth};
             float u{static_cast<float>(j) / static_cast<float>(depth_segments_count) * 0.25f};
-            vertices.push_back(asr::Vertex{-half_width, y, z, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{-half_width, y, z, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
             indices.push_back(vertices.size() - 1);
         }
     }
@@ -511,7 +514,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= width_segments_count; ++j) {
             float x{static_cast<float>(j) * segment_width - half_width};
             float u{0.25f + static_cast<float>(j) / static_cast<float>(width_segments_count) * 0.25f};
-            vertices.push_back(asr::Vertex{x, -half_height, z, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{x, -half_height, z, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
             indices.push_back(vertices.size() - 1);
         }
     }
@@ -524,7 +527,7 @@ static std::pair<std::vector<asr::Vertex>, std::vector<unsigned int>> generate_b
         for (unsigned int j = 0; j <= width_segments_count; ++j) {
             float x{static_cast<float>(j) * segment_width - half_width};
             float u{0.25f + static_cast<float>(j) / static_cast<float>(width_segments_count) * 0.25f};
-            vertices.push_back(asr::Vertex{x, half_height, z, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
+            vertices.push_back(asr::Vertex{x, half_height, z, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, u, v});
             indices.push_back(vertices.size() - 1);
         }
     }
@@ -536,41 +539,30 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
 {
     using namespace asr;
 
-    create_window(500, 500);
+    create_window(500, 500, "Box Test on ASR Version 4.0");
 
-    create_shader_program(
-        Vertex_Shader_Source,
-        Fragment_Shader_Source
-    );
+    auto material = create_material(Vertex_Shader_Source, Fragment_Shader_Source);
+
     auto [geometry_vertices, geometry_indices] = generate_box_geometry_data(1.0f, 1.0f, 1.0f, 5, 5, 5);
-    auto geometry = generate_geometry(
-        GeometryType::Triangles,
-        geometry_vertices,
-        geometry_indices
-    );
+    auto geometry = create_geometry(Triangles, geometry_vertices, geometry_indices);
+
     auto [edge_vertices, edge_indices] = generate_box_edges_data(1.001f, 1.001f, 1.001f, 5, 5, 5);
-    auto edges_geometry = generate_geometry(
-        GeometryType::Lines,
-        edge_vertices,
-        edge_indices
-    );
+    auto edges_geometry = create_geometry(Lines, edge_vertices, edge_indices);
+
     auto [vertices, vertex_indices] = generate_box_vertices_data(1.002f, 1.002f, 1.002f, 5, 5, 5);
-    for (auto &vertex : vertices) {
-        vertex.r = 1.0f; vertex.g = 0.0f; vertex.b = 0.0f;
-    }
-    auto vertices_geometry = generate_geometry(
-        GeometryType::Points,
-        vertices,
-        vertex_indices
-    );
+    for (auto &vertex : vertices) { vertex.r = 1.0f; vertex.g = 0.0f; vertex.b = 0.0f; }
+    auto vertices_geometry = create_geometry(Points, vertices, vertex_indices);
+
     auto image = read_image_file("data/images/cubemap_test.png");
-    auto texture = generate_texture(image);
+    auto texture = create_texture(image);
 
     prepare_for_rendering();
 
-    set_line_width(3);
-    enable_depth_test();
-    enable_face_culling();
+    set_material_current(&material);
+    set_material_line_width(3.0f);
+    set_material_point_size(10.0f);
+    set_material_face_culling_enabled(true);
+    set_material_depth_test_enabled(true);
 
     static const float CAMERA_SPEED{6.0f};
     static const float CAMERA_ROT_SPEED{1.5f};
@@ -578,8 +570,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
     static const float CAMERA_NEAR_PLANE{0.1f};
     static const float CAMERA_FAR_PLANE{100.0f};
 
-    glm::vec3 camera_position{0.0f, 0.0f, 1.5f};
-    glm::vec3 camera_rotation{0.0f, 0.0f, 0.0f};
+    glm::vec3 camera_position{1.12f, 0.88f, 1.4f};
+    glm::vec3 camera_rotation{-0.5f, 0.7f, 0.0f};
     set_keys_down_event_handler([&](const uint8_t *keys) {
         if (keys[SDL_SCANCODE_ESCAPE]) std::exit(0);
         if (keys[SDL_SCANCODE_W]) camera_rotation.x -= CAMERA_ROT_SPEED * get_dt();
@@ -595,7 +587,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
             camera_position += shift;
         }
     });
-    set_matrix_mode(MatrixMode::Projection);
+    set_matrix_mode(Projection);
     load_perspective_projection_matrix(CAMERA_FOV, CAMERA_NEAR_PLANE, CAMERA_FAR_PLANE);
 
     bool should_stop{false};
@@ -604,7 +596,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
 
         prepare_to_render_frame();
 
-        set_matrix_mode(MatrixMode::View);
+        set_matrix_mode(View);
         load_identity_matrix();
         translate_matrix(camera_position);
         rotate_matrix(camera_rotation);
@@ -623,10 +615,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
     }
 
     destroy_texture(texture);
+
     destroy_geometry(geometry);
     destroy_geometry(edges_geometry);
     destroy_geometry(vertices_geometry);
-    destroy_shader_program();
+
+    destroy_material(material);
 
     destroy_window();
 
