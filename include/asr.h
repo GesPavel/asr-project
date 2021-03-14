@@ -680,8 +680,19 @@ namespace asr
                 uniform_name_buffer
             );
 
-            std::string uniform_name(uniform_name_buffer);
-            material.shader_uniforms[uniform_name] = glGetUniformLocation(shader_program, uniform_name_buffer);
+            if (uniform_size > 1) {
+                std::string uniform_name{uniform_name_buffer};
+                uniform_name = uniform_name.substr(0, uniform_name.size() - 3);
+                for (GLint j = 0; j < uniform_size; ++j) {
+                    std::string uniform_name_at_slot = uniform_name + "[" + std::to_string(j) + "]";
+                    material.shader_uniforms[uniform_name_at_slot] =
+                        glGetUniformLocation(shader_program, uniform_name_at_slot.c_str());
+                }
+            } else {
+                std::string uniform_name(uniform_name_buffer);
+                material.shader_uniforms[uniform_name] =
+                    glGetUniformLocation(shader_program, uniform_name_buffer);
+            }
         }
 
         glDetachShader(shader_program, vertex_shader_object);
