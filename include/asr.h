@@ -935,37 +935,37 @@ namespace asr
         );
     }
 
-	static void set_material_parameter(const std::string& parameter_name, int count, int* value)
-	{
-		assert(data::current_material);
+    static void set_material_parameter(const std::string &parameter_name, int count, int *values)
+    {
+        assert(data::current_material);
 
-		glUniform1iv(
-			data::current_material->shader_uniforms[parameter_name],\
-			count,
-			static_cast<GLint*>(value)
-		);
-	}
+        glUniform1iv(
+            data::current_material->shader_uniforms[parameter_name],
+            count,
+            static_cast<GLint *>(values)
+        );
+    }
 
     static void set_material_parameter(const std::string &parameter_name, float value)
     {
         assert(data::current_material);
-		
+
         glUniform1f(
             data::current_material->shader_uniforms[parameter_name],
             static_cast<GLfloat>(value)
         );
     }
 
-	static void set_material_parameter(const std::string& parameter_name, int count, float* value)
-	{
-		assert(data::current_material);
-		GLint temp = data::current_material->shader_uniforms[parameter_name];
-		glUniform1fv(
-			data::current_material->shader_uniforms[parameter_name],
-			count,
-			static_cast<GLfloat*>(value)
-		);
-	}
+    static void set_material_parameter(const std::string &parameter_name, int count, float *values)
+    {
+        assert(data::current_material);
+
+        glUniform1fv(
+            data::current_material->shader_uniforms[parameter_name],
+            count,
+            static_cast<GLfloat *>(values)
+        );
+    }
 
     static void set_material_parameter(const std::string &parameter_name, glm::vec2 value)
     {
@@ -977,15 +977,15 @@ namespace asr
         );
     }
 
-	static void set_material_parameter(const std::string& parameter_name, int count, glm::vec2* value)
-	{
-		assert(data::current_material);
+    static void set_material_parameter(const std::string &parameter_name, int count, glm::vec2 *values)
+    {
+        assert(data::current_material);
 
-		glUniform2fv(
-			data::current_material->shader_uniforms[parameter_name],
-			count, glm::value_ptr(value[0])
-		);
-	}
+        glUniform2fv(
+            data::current_material->shader_uniforms[parameter_name],
+            count, glm::value_ptr(values[0])
+        );
+    }
 
     static void set_material_parameter(const std::string &parameter_name, glm::vec3 value)
     {
@@ -997,15 +997,15 @@ namespace asr
         );
     }
 
-	static void set_material_parameter(const std::string& parameter_name, int count, glm::vec3* value)
-	{
-		assert(data::current_material);
+    static void set_material_parameter(const std::string& parameter_name, int count, glm::vec3 *values)
+    {
+        assert(data::current_material);
 
-		glUniform3fv(
-			data::current_material->shader_uniforms[parameter_name],
-			count, glm::value_ptr(value[0])
-		);
-	}
+        glUniform3fv(
+            data::current_material->shader_uniforms[parameter_name],
+            count, glm::value_ptr(values[0])
+        );
+    }
 
     static void set_material_parameter(const std::string &parameter_name, glm::vec4 value)
     {
@@ -1017,15 +1017,15 @@ namespace asr
         );
     }
 
-	static void set_material_parameter(const std::string& parameter_name, int count, glm::vec4* value)
-	{
-		assert(data::current_material);
+    static void set_material_parameter(const std::string &parameter_name, int count, glm::vec4 *values)
+    {
+        assert(data::current_material);
 
-		glUniform4fv(
-			data::current_material->shader_uniforms[parameter_name],
-			count, glm::value_ptr(value[0])
-		);
-	}
+        glUniform4fv(
+            data::current_material->shader_uniforms[parameter_name],
+            count, glm::value_ptr(values[0])
+        );
+    }
 
     static void set_material_parameter(const std::string &parameter_name, glm::mat3 value)
     {
@@ -1038,16 +1038,16 @@ namespace asr
         );
     }
 
-	static void set_material_parameter(const std::string& parameter_name, int  count, glm::mat3* value)
-	{
-		assert(data::current_material);
+    static void set_material_parameter(const std::string &parameter_name, int  count, glm::mat3 *values)
+    {
+        assert(data::current_material);
 
-		glUniformMatrix3fv(
-			data::current_material->shader_uniforms[parameter_name],
-			count, GL_FALSE,
-			glm::value_ptr(value[0])
-		);
-	}
+        glUniformMatrix3fv(
+            data::current_material->shader_uniforms[parameter_name],
+            count, GL_FALSE,
+            glm::value_ptr(values[0])
+        );
+    }
 
     static void set_material_parameter(const std::string &parameter_name, glm::mat4 value)
     {
@@ -1060,16 +1060,16 @@ namespace asr
         );
     }
 
-	static void set_material_parameter(const std::string& parameter_name, int  count, glm::mat4* value)
-	{
-		assert(data::current_material);
+    static void set_material_parameter(const std::string &parameter_name, int  count, glm::mat4 *values)
+    {
+        assert(data::current_material);
 
-		glUniformMatrix4fv(
-			data::current_material->shader_uniforms[parameter_name],
-			count, GL_FALSE,
-			glm::value_ptr(value[0])
-		);
-	}
+        glUniformMatrix4fv(
+            data::current_material->shader_uniforms[parameter_name],
+            count, GL_FALSE,
+            glm::value_ptr(values[0])
+        );
+    }
 
 
     static void set_material_current(Material *material)
