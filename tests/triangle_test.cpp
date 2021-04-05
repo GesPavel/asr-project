@@ -1,78 +1,31 @@
 #include "asr.h"
 
-#include <string>
-#include <vector>
-
-static const std::string Vertex_Shader_Source = R"(
-    #version 110
-
-    attribute vec4 position;
-    attribute vec4 color;
-
-    uniform float time;
-
-    varying vec4 fragment_color;
-
-    void main()
-    {
-        fragment_color = color;
-
-        vec4 rotated_position = position;
-        rotated_position.x = position.x * cos(time) - position.y * sin(time);
-        rotated_position.y = position.x * sin(time) + position.y * cos(time);
-
-        gl_Position = rotated_position;
-    }
-)";
-
-static const std::string Fragment_Shader_Source = R"(
-    #version 110
-
-    varying vec4 fragment_color;
-
-    void main()
-    {
-        gl_FragColor = fragment_color;
-    }
-)";
-
-static const std::vector<asr::Vertex> Triangle_Geometry_Vertices = {
-    //           Position             Normal            Color (RGBA)            Texture Coordinates (UV)
-    asr::Vertex{ 0.5f,   0.0f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,  0.5f },
-    asr::Vertex{-0.25f,  0.43f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.25f, 0.07f},
-    asr::Vertex{-0.25f, -0.43f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.25f, 0.93f}
-};
-static const std::vector<unsigned int> Triangle_Geometry_Indices = { 0, 1, 2 };
-
-int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
+[[noreturn]] int main()
 {
     using namespace asr;
 
-    create_window(500, 500, "Triangle Test on ASR Version 4.0");
+    auto window = std::make_shared<ES2SDLWindow>("asr");
 
-    auto material = create_material(Vertex_Shader_Source, Fragment_Shader_Source);
-    auto geometry = create_geometry(Triangles, Triangle_Geometry_Vertices, Triangle_Geometry_Indices);
+    auto[triangle_indices, triangle_vertices] = geometry_generators::generate_triangle_geometry_data(4.0f);
+    auto triangle_geometry = std::make_shared<ES2Geometry>(triangle_indices, triangle_vertices);
+    triangle_geometry->get_vertices()[0].color = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
+    triangle_geometry->get_vertices()[1].color = glm::vec4{0.0f, 1.0f, 0.0f, 1.0f};
+    triangle_geometry->get_vertices()[2].color = glm::vec4{0.0f, 0.0f, 1.0f, 1.0f};
+    auto triangle_material = std::make_shared<ES2ConstantMaterial>();
+    triangle_material->set_face_culling_enabled(false);
+    auto triangle = std::make_shared<Mesh>(triangle_geometry, triangle_material);
 
-    prepare_for_rendering();
+    std::vector<std::shared_ptr<Object>> objects{triangle};
+    auto scene = std::make_shared<Scene>(objects);
+    auto camera = scene->get_camera();
+    camera->set_z(5.0f);
 
-    set_material_current(&material);
+    ES2Renderer renderer(scene, window);
+    for (;;) {
+        window->poll();
 
-    bool should_stop{false};
-    while (!should_stop) {
-        process_window_events(&should_stop);
+        triangle->add_to_rotation_z(-0.01f); // no dt in this version ;( handle it yourself
 
-        prepare_to_render_frame();
-
-        set_geometry_current(&geometry);
-        render_current_geometry();
-
-        finish_frame_rendering();
+        renderer.render();
     }
-
-    destroy_geometry(geometry);
-    destroy_material(material);
-
-    destroy_window();
-
-    return 0;
 }
