@@ -56,6 +56,12 @@ target_link_libraries(window_test ${ASR_LIBRARIES})
 add_executable(triangle_test ${ASR_SOURCES} tests/triangle_test.cpp)
 target_link_libraries(triangle_test ${ASR_LIBRARIES})
 
+add_executable(box_test ${ASR_SOURCES} tests/box_test.cpp)
+target_link_libraries(box_test ${ASR_LIBRARIES})
+
+add_executable(transform_test ${ASR_SOURCES} tests/transform_test.cpp)
+target_link_libraries(transform_test ${ASR_LIBRARIES})
+
 add_executable(scene_graph_test ${ASR_SOURCES} tests/scene_graph_test.cpp)
 target_link_libraries(scene_graph_test ${ASR_LIBRARIES})
 
@@ -70,3 +76,6 @@ target_link_libraries(textured_plane_test ${ASR_LIBRARIES})
 
 add_executable(normal_mapping_test ${ASR_SOURCES} tests/normal_mapping_test.cpp)
 target_link_libraries(normal_mapping_test ${ASR_LIBRARIES})
+
+add_executable(general_usage_test ${ASR_SOURCES} tests/general_usage_test.cpp)
+target_link_libraries(general_usage_test ${ASR_LIBRARIES})

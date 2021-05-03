@@ -1,7 +1,8 @@
 #include "asr.h"
 
-#include <cstdlib>
+#include <chrono>
 #include <cmath>
+#include <cstdlib>
 #include <ctime>
 
 [[noreturn]] int main()
@@ -129,20 +130,18 @@
 
     ES2Renderer renderer(scene, window);
 
-    time_t current_time;
-    struct tm *local_time;
     for (;;) {
         window->poll();
 
-        time(&current_time);
-        local_time = localtime(&current_time);
-        float hour{static_cast<float>(local_time->tm_hour)};
-        float min{static_cast<float>(local_time->tm_min)};
-        float sec{static_cast<float>(local_time->tm_sec)};
+        time_t current_time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
+        struct tm *local_time{std::localtime(&current_time)};
+        float hours{static_cast<float>(local_time->tm_hour)};
+        float minutes{static_cast<float>(local_time->tm_min)};
+        float seconds{static_cast<float>(local_time->tm_sec)};
 
-        hours_hand->set_rotation_z(hour / 12.0f * 2.0f * static_cast<float>(M_PI) + static_cast<float>(M_PI) * 0.5f);
-        minutes_hand->set_rotation_z(min / 60.0f * 2.0f * static_cast<float>(M_PI) + static_cast<float>(M_PI) * 0.5f);
-        seconds_hand->set_rotation_z(sec / 60.0f * 2.0f * static_cast<float>(M_PI) + static_cast<float>(M_PI) * 0.5f);
+        hours_hand->set_rotation_z(hours / 12.0f * 2.0f * static_cast<float>(M_PI) + static_cast<float>(M_PI) * 0.5f);
+        minutes_hand->set_rotation_z(minutes / 60.0f * 2.0f * static_cast<float>(M_PI) + static_cast<float>(M_PI) * 0.5f);
+        seconds_hand->set_rotation_z(seconds / 60.0f * 2.0f * static_cast<float>(M_PI) + static_cast<float>(M_PI) * 0.5f);
         root->add_to_rotation_y(0.01f);
 
         renderer.render();

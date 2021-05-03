@@ -30,6 +30,7 @@
     auto sphere1_material = std::make_shared<ES2PhongMaterial>();
     sphere1_material->set_diffuse_color(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
     sphere1_material->set_specular_exponent(40.f);
+    sphere1_material->set_transparent(true);
     auto[image2_data, image2_width, image2_height, image2_channels] = file_utilities::read_image_file("data/images/checkerboard.png");
     auto texture2 = std::make_shared<ES2Texture>(image2_data, image2_width, image2_height, image2_channels);
     sphere1_material->set_texture_1(texture2);
@@ -54,7 +55,7 @@
     point_light1->set_two_sided(true);
     point_light1->add_child(lamp1);
     point_light2->set_intensity(0.45f);
-    point_light1->set_z(10.0f);
+    point_light2->set_z(10.0f);
     point_light2->set_y(2.0f);
     point_light2->set_two_sided(true);
     point_light2->add_child(lamp2);
