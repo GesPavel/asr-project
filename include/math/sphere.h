@@ -55,6 +55,14 @@ namespace asr
             _radius *= scale;
         }
 
+        [[nodiscard]] bool intersects_with_sphere(const Sphere& sphere) const {
+			float difference_between_centers = sqrt(pow(_center.x - sphere.get_center().x, 2) + 
+														pow(_center.y - sphere.get_center().y, 2) + 
+														pow(_center.z - sphere.get_center().z, 2));
+			return difference_between_centers < (_radius + sphere.get_radius());
+
+		}
+
     private:
         glm::vec3 _center;
         float _radius;
