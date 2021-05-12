@@ -82,10 +82,7 @@ namespace asr
 		}
 
 		void clear_children() {
-			while(!_children.empty()){
-				auto ptr = _children.begin();
-				_children.erase(ptr);
-			}
+			_children.clear();
 		}
 
         const std::vector<std::shared_ptr<Object>> &get_children() const

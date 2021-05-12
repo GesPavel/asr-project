@@ -56,10 +56,13 @@ namespace asr
         }
 
         [[nodiscard]] bool intersects_with_sphere(const Sphere& sphere) const {
-			float difference_between_centers = sqrt(pow(_center.x - sphere.get_center().x, 2) + 
-														pow(_center.y - sphere.get_center().y, 2) + 
-														pow(_center.z - sphere.get_center().z, 2));
-			return difference_between_centers < (_radius + sphere.get_radius());
+			float difference_between_x = _center.x - sphere.get_center().x;
+			float difference_between_y = _center.y - sphere.get_center().y;
+			float difference_between_z = _center.z - sphere.get_center().z;
+			float difference_between_centers =	difference_between_x * difference_between_x +
+												difference_between_y * difference_between_y  +
+												difference_between_z * difference_between_z;
+			return difference_between_centers < (_radius + sphere.get_radius()) * (_radius + sphere.get_radius());
 
 		}
 
